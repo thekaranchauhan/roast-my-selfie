@@ -1,14 +1,13 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useEffect, RefObject } from "react";
 
 type ImageStretchProps = {
   file: File | null;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
 };
 
-export default function ImageStretch({ file }: ImageStretchProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
+export default function ImageStretch({ file, canvasRef }: ImageStretchProps) {
   useEffect(() => {
     if (file && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -18,11 +17,11 @@ export default function ImageStretch({ file }: ImageStretchProps) {
 
       img.onload = () => {
         canvas.width = img.width;
-        canvas.height = img.height * 1.5; // Stretching height by 50%
+        canvas.height = img.height * 1.5;
         ctx?.drawImage(img, 0, 0, img.width, img.height * 1.5);
       };
     }
-  }, [file]);
+  }, [file, canvasRef]);
 
   return (
     <div className="mt-4">

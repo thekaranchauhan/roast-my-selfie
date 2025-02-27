@@ -2,12 +2,12 @@
 
 import { useEffect, RefObject } from "react";
 
-type ImagePixelateProps = {
+type ImageMirrorProps = {
   file: File | null;
   canvasRef: RefObject<HTMLCanvasElement | null>;
 };
 
-export default function ImagePixelate({ file, canvasRef }: ImagePixelateProps) {
+export default function ImageMirror({ file, canvasRef }: ImageMirrorProps) {
   useEffect(() => {
     if (file && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -18,14 +18,8 @@ export default function ImagePixelate({ file, canvasRef }: ImagePixelateProps) {
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
-
-        const blockSize = 10;
-        const tempCanvas = document.createElement("canvas");
-        const tempCtx = tempCanvas.getContext("2d");
-        tempCanvas.width = img.width / blockSize;
-        tempCanvas.height = img.height / blockSize;
-        tempCtx?.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-        ctx?.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+        ctx?.scale(-1, 1);
+        ctx?.drawImage(img, -img.width, 0);
       };
     }
   }, [file, canvasRef]);

@@ -2,12 +2,12 @@
 
 import { useEffect, RefObject } from "react";
 
-type ImagePixelateProps = {
+type ImageInvertProps = {
   file: File | null;
   canvasRef: RefObject<HTMLCanvasElement | null>;
 };
 
-export default function ImagePixelate({ file, canvasRef }: ImagePixelateProps) {
+export default function ImageInvert({ file, canvasRef }: ImageInvertProps) {
   useEffect(() => {
     if (file && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -18,14 +18,17 @@ export default function ImagePixelate({ file, canvasRef }: ImagePixelateProps) {
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+        if (!imageData) return;
+        const data = imageData.data;
 
-        const blockSize = 10;
-        const tempCanvas = document.createElement("canvas");
-        const tempCtx = tempCanvas.getContext("2d");
-        tempCanvas.width = img.width / blockSize;
-        tempCanvas.height = img.height / blockSize;
-        tempCtx?.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-        ctx?.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 255 - data[i];
+          data[i + 1] = 255 - data[i + 1];
+          data[i + 2] = 255 - data[i + 2];
+        }
+        ctx?.putImageData(imageData, 0, 0);
       };
     }
   }, [file, canvasRef]);
